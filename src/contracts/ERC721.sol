@@ -22,9 +22,9 @@ contract ERC721 {
     // Mapping from onwer to number of owned tokens
     mapping(address => uint256) private _OwnedTokensCount;
 
-    /// @notice Count all NFTs assigned to an owner
-    /// @dev NFTs assigned to the zero address are considered invalid, and this
-    ///  function throws for queries about the zero address.
+    // Mapping from token id to approved address
+    mapping(uint256 => address) private _tokenApprovals;
+
     /// @param _owner An address for whom to query the balance
     /// @return The number of NFTs owned by `_owner`, possibly zero
     function balanceOf(address _owner) public view returns (uint256) {
@@ -35,9 +35,6 @@ contract ERC721 {
         return _OwnedTokensCount[_owner];
     }
 
-    /// @notice Find the owner of an NFT
-    /// @dev NFTs assigned to zero address are considered invalid, and queries
-    ///  about them do throw.
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
     function ownerOf(uint256 _tokenId) external view returns (address) {
@@ -65,5 +62,38 @@ contract ERC721 {
         _OwnedTokensCount[to]++;
 
         emit Transfer(address(0), to, tokenId);
+    }
+
+    /// @param _from The current owner of the NFT
+    /// @param _to The new owner
+    /// @param _tokenId The NFT to transfer
+    function _transferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId
+    ) internal {
+        // 4. add the safe functionality :
+        // a. require that the address receiving a token is not a zero address
+        // b. require the address transfering the token actually owns the token
+        require(_to != address(0), "Location address is not exists");
+        require(this.ownerOf(_tokenId) == _from, "Not a valid address");
+
+        // 1. add the token id to the address receiving the token
+        _tokenOwner[_tokenId] = _to;
+
+        // 2. update the balance of the address _from
+        // 3. update the balance of the address _to
+        _OwnedTokensCount[_from]--;
+        _OwnedTokensCount[_to]++;
+
+        emit Transfer(_from, _to, _tokenId);
+    }
+
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId
+    ) public {
+        _transferFrom(_from, _to, _tokenId);
     }
 }
