@@ -41,6 +41,7 @@ contract ERC721 {
         return _OwnedTokensCount[_owner];
     }
 
+    // ownerOf : check the address of particular token owner
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
     function ownerOf(uint256 _tokenId) external view returns (address) {
@@ -53,11 +54,13 @@ contract ERC721 {
         return owner;
     }
 
+    // _exists : check if particular tokenId exist or not
     function _exists(uint256 tokenId) internal view returns (bool) {
         address owner = _tokenOwner[tokenId];
         return owner != address(0);
     }
 
+    // _mint : user call mint from KryptoBirdz.sol and run it here
     // virtual _mint function, be overrided in ERC721Enumerable.sol
     function _mint(address to, uint256 tokenId) internal virtual {
         // address(0) -> 0x000000
@@ -70,6 +73,7 @@ contract ERC721 {
         emit Transfer(address(0), to, tokenId);
     }
 
+    // TranferFrom : tranfer one token from an address to another
     /// @param _from The current owner of the NFT
     /// @param _to The new owner
     /// @param _tokenId The NFT to transfer
@@ -100,31 +104,35 @@ contract ERC721 {
         address _to,
         uint256 _tokenId
     ) public {
+        // require(isApprovedOrOwner(msg.sender, _tokenId));
         _transferFrom(_from, _to, _tokenId);
     }
 
-    // function approve(address _to, uint256 _tokenId) public {
-    //     // 1. require that the person approving is the owner
-    //     // 2. approving an address to a token(tokenId)
-    //     // 3. require that we cant apprvoe sending token of the owenr to the owner
-    //     // 4. update the map of the approval address
-    //     address owner = this.ownerOf(_tokenId);
-    //     require(_to != owner, "Error - approval to current owner");
-    //     require(
-    //         msg.sender == owner,
-    //         "Currnet caller is not the owner of the token"
-    //     );
-    //     _tokenApprovals[_tokenId] = _to;
-    //     emit Approval(owner, _to, _tokenId);
-    // }
+    // Optional: approval function make a address can access particular tokenId
 
-    // function isApprovedOrOwner(address spender, uint256 _tokenId)
-    //     internal
-    //     view
-    //     returns (bool)
-    // {
-    //     require(_exists(_tokenId), "token does not exist");
-    //     address owner = this.ownerOf(_tokenId);
-    //     return (spender == owner || getApproved(_tokenId) == spender);
-    // }
+    function approve(address _to, uint256 _tokenId) public {
+        // 1. require that the person approving is the owner
+        // 2. approving an address to a token(tokenId)
+        // 3. require that we cant apprvoe sending token of the owenr to the owner
+        // 4. update the map of the approval address
+        address owner = this.ownerOf(_tokenId);
+        require(_to != owner, "Error - approval to current owner");
+        require(
+            msg.sender == owner,
+            "Currnet caller is not the owner of the token"
+        );
+        _tokenApprovals[_tokenId] = _to;
+        emit Approval(owner, _to, _tokenId);
+    }
+
+    function isApprovedOrOwner(address spender, uint256 _tokenId)
+        internal
+        view
+        returns (bool)
+    {
+        require(_exists(_tokenId), "token does not exist");
+        address owner = this.ownerOf(_tokenId);
+        // return (spender == owner || getApproved(_tokenId) == spender);
+        return (spender == owner);
+    }
 }
