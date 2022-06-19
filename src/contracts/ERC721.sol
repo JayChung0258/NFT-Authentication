@@ -13,6 +13,17 @@ import "./interfaces/IERC721.sol";
 */
 
 contract ERC721 is ERC165, IERC721 {
+    // register the interface functions first
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256("transferFrom(bytes4)") ^
+                    ("balanceOf(bytes4)") ^
+                    ("ownerOf(bytes4)")
+            )
+        );
+    }
+
     // Mapping from token id to the onwer
     mapping(uint256 => address) private _tokenOwner;
 

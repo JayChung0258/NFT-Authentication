@@ -7,6 +7,17 @@ import "./interfaces/IERC721Enumerable.sol";
 // This is must for NFT market
 
 contract ERC721Enumerable is ERC721, IERC721Enumerable {
+    // register the interface functions first
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256("totalSupply(bytes4)") ^
+                    ("tokenByIndex(bytes4)") ^
+                    ("tokenOfOwnerByIndex(bytes4)")
+            )
+        );
+    }
+
     uint256[] private _allTokens;
 
     // mapping from tokenId position in _allTokens array
