@@ -2,6 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./ERC165.sol";
+import "./interfaces/IERC721.sol";
 
 /*
     a. nft address
@@ -11,19 +12,7 @@ import "./ERC165.sol";
     e. create an event that emit a transfer log
 */
 
-contract ERC721 is ERC165 {
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
-    event Approval(
-        address indexed owner,
-        address indexed approved,
-        uint256 indexed tokenId
-    );
-
+contract ERC721 is ERC165, IERC721 {
     // Mapping from token id to the onwer
     mapping(uint256 => address) private _tokenOwner;
 
@@ -35,7 +24,7 @@ contract ERC721 is ERC165 {
 
     /// @param _owner An address for whom to query the balance
     /// @return The number of NFTs owned by `_owner`, possibly zero
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) public view override returns (uint256) {
         require(
             _owner != address(0),
             "ERC721: owner query for non-existent token"
@@ -46,7 +35,7 @@ contract ERC721 is ERC165 {
     // ownerOf : check the address of particular token owner
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
-    function ownerOf(uint256 _tokenId) external view returns (address) {
+    function ownerOf(uint256 _tokenId) public view override returns (address) {
         require(_exists(_tokenId), "Token has not yet been minted");
         address owner = _tokenOwner[_tokenId];
         require(
@@ -105,7 +94,7 @@ contract ERC721 is ERC165 {
         address _from,
         address _to,
         uint256 _tokenId
-    ) public {
+    ) public override {
         // require(isApprovedOrOwner(msg.sender, _tokenId));
         _transferFrom(_from, _to, _tokenId);
     }
