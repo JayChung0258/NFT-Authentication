@@ -7,6 +7,9 @@ class App extends Component {
     super(props);
     this.state = {
       account: "",
+      contract: null,
+      totalSupply: 0,
+      kryptoBirdz: [],
     };
   }
 
@@ -44,20 +47,36 @@ class App extends Component {
       var abi = KryptoBird.abi;
       var address = networkData.address;
       var contract = new window.web3.eth.Contract(abi, address);
-      console.log(contract);
+      this.setState({ contract });
+
+      // call totalSupply
+      const totalSupply = await contract.methods.totalSupply().call();
+      this.setState({ totalSupply });
+      console.log(this.state.totalSupply);
+
+      // keep track numbers of tokens
+      for (var i = 0; i < totalSupply; i++) {
+        const KryptoBird = await contract.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
+        //handle state of front end
+        this.setState({
+          kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
+        });
+        console.log(this.state.kryptoBirdz);
+      }
+    } else {
+      window.alert("Smart Contract not deployed");
     }
   }
 
   render() {
     return (
       <div>
-        {/* navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow */}
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <div
             className="navbar-brand col-sm-3 col-md-3 mr-0"
-            style={{ color: "black" }}
+            style={{ color: "white" }}
           >
-            Krypto Birdz NFTs
+            NFT Authetication System
           </div>
           <ul className="navbar-nav px-3">
             <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
