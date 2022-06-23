@@ -38,7 +38,8 @@ class App extends Component {
     const accounts = await window.ethereum.request({
       method: "eth_accounts",
     });
-    this.setState({ account: accounts });
+    this.setState({ account: accounts[0] });
+    console.log("Account: " + this.state.account);
 
     // create a constant js variable networkId which is set to blockchain network id
     const networkId = await window.web3.eth.net.getId();
@@ -55,18 +56,30 @@ class App extends Component {
       console.log(this.state.totalSupply);
 
       // keep track numbers of tokens
-      for (var i = 0; i < totalSupply; i++) {
-        const KryptoBird = await contract.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
+      for (var i = 0; i < this.state.totalSupply; i++) {
+        const KryptoBird = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
         //handle state of front end
         this.setState({
           kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
         });
-        console.log(this.state.kryptoBirdz);
       }
+      console.log(this.state.kryptoBirdz);
     } else {
       window.alert("Smart Contract not deployed");
     }
   }
+
+  // with minting we are sending info and we need to specify the account
+  mint = (mintMsg) => {
+    this.state.contract.methods
+      .mint(mintMsg)
+      .send({ from: this.state.account })
+      .once("receipt", (receipt) => {
+        this.setState({
+          kryptoBirdz: [...this.state.kryptoBirdz, mintMsg],
+        });
+      });
+  };
 
   render() {
     return (
@@ -84,6 +97,41 @@ class App extends Component {
             </li>
           </ul>
         </nav>
+
+        <div className="container-fluid mt-1">
+          <div className="row">
+            <main role="main" className="col-lg-12 d-flex text-center">
+              <div
+                className="content mr-auto ml-auto"
+                style={{ opacity: "0.8" }}
+              >
+                <h1 style={{ color: "white" }}>
+                  NFT Authetication - Dash Board
+                </h1>
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const mintMsg = this.mintMsg.value;
+                    this.mint(mintMsg);
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Add a file location"
+                    className="form-control mb-1"
+                    ref={(input) => (this.mintMsg = input)}
+                  ></input>
+                  <input
+                    style={{ margin: "6px" }}
+                    type="submit"
+                    className="btn btn-primary btn-black"
+                    value="MINT"
+                  ></input>
+                </form>
+              </div>
+            </main>
+          </div>
+        </div>
       </div>
     );
   }
