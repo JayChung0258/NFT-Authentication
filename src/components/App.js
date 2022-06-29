@@ -76,25 +76,33 @@ class App extends Component {
       );
 
       // keep track numbers of tokens
-      for (var i = 0; i < this.state.totalSupply; i++) {
-        const KryptoBird = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
-        //handle state of front end
-        this.setState({
-          kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
-        });
-      }
+      // for (var i = 0; i < this.state.totalSupply; i++) {
+      //   const KryptoBird = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
+      //   //handle state of front end
+      //   this.setState({
+      //     kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
+      //   });
+      // }
       console.log(this.state.kryptoBirdz);
 
       // keep track numbers of tokens in target wallet
-      for (var i = 0; i < this.state.targetWalletTotalSupply; i++) {
-        const authTokens = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
-        //handle state of front end
-        this.setState({
-          targetWalletAuthTokens: [
-            ...this.state.targetWalletAuthTokens,
-            authTokens,
-          ],
-        });
+      for (var i = 0; i < this.state.totalSupply; i++) {
+        const authTokens = await contract.methods.KryptoBirdz(i).call();
+        const ownerAddress = await contract.methods.ownerOf(i).call();
+
+        console.log("ownerAddress: " + ownerAddress);
+        console.log("accounts[0]: " + this.state.account);
+
+        // if token is in the target wallet then add it to the state
+        if (ownerAddress.toUpperCase() == accounts[0].toUpperCase()) {
+          console.log("SAME!");
+          this.setState({
+            targetWalletAuthTokens: [
+              ...this.state.targetWalletAuthTokens,
+              authTokens,
+            ],
+          });
+        }
       }
       console.log(this.state.targetWalletAuthTokens);
     } else {
@@ -166,7 +174,7 @@ class App extends Component {
           </div>
           <hr></hr>
           <div className="row textCenter">
-            {this.state.kryptoBirdz.map((srcImage, key) => {
+            {this.state.targetWalletAuthTokens.map((srcImage, key) => {
               return (
                 <div>
                   <div>
