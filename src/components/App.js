@@ -18,7 +18,9 @@ class App extends Component {
       account: "",
       contract: null,
       totalSupply: 0,
+      targetWalletTotalSupply: 0,
       kryptoBirdz: [],
+      targetWalletAuthTokens: [],
     };
   }
 
@@ -62,7 +64,16 @@ class App extends Component {
       // call totalSupply
       const totalSupply = await contract.methods.totalSupply().call();
       this.setState({ totalSupply });
-      console.log(this.state.totalSupply);
+      console.log("contract total supply: " + this.state.totalSupply);
+
+      // individual supply
+      const targetWalletTotalSupply = await contract.methods
+        .balanceOf(this.state.account)
+        .call();
+      this.setState({ targetWalletTotalSupply });
+      console.log(
+        "target wallet total supply: " + this.state.targetWalletTotalSupply
+      );
 
       // keep track numbers of tokens
       for (var i = 0; i < this.state.totalSupply; i++) {
@@ -73,6 +84,19 @@ class App extends Component {
         });
       }
       console.log(this.state.kryptoBirdz);
+
+      // keep track numbers of tokens in target wallet
+      for (var i = 0; i < this.state.targetWalletTotalSupply; i++) {
+        const authTokens = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
+        //handle state of front end
+        this.setState({
+          targetWalletAuthTokens: [
+            ...this.state.targetWalletAuthTokens,
+            authTokens,
+          ],
+        });
+      }
+      console.log(this.state.targetWalletAuthTokens);
     } else {
       window.alert("Smart Contract not deployed");
     }
