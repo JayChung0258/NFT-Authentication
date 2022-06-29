@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import Web3 from "web3";
 import KryptoBird from "../abis/KryptoBird.json";
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCardText,
+  MDBCardImage,
+  MDBBtn,
+} from "mdb-react-ui-kit";
+import "./App.css";
 
 class App extends Component {
   constructor(props) {
@@ -83,7 +92,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="container-filled">
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <div
             className="navbar-brand col-sm-3 col-md-3 mr-0"
@@ -105,7 +114,7 @@ class App extends Component {
                 className="content mr-auto ml-auto"
                 style={{ opacity: "0.8" }}
               >
-                <h1 style={{ color: "white" }}>
+                <h1 style={{ color: "black" }}>
                   NFT Authetication - Dash Board
                 </h1>
                 <form
@@ -130,6 +139,35 @@ class App extends Component {
                 </form>
               </div>
             </main>
+          </div>
+          <hr></hr>
+          <div className="row textCenter">
+            {this.state.kryptoBirdz.map((srcImage, key) => {
+              return (
+                <div>
+                  <div>
+                    <MDBCard
+                      className="token img"
+                      style={{ maxWidth: "22rem" }}
+                    >
+                      <MDBCardImage
+                        src={srcImage}
+                        position="top"
+                        height="250rem"
+                        style={{ marginRight: "4px" }}
+                      />
+                      <MDBCardBody>
+                        <MDBCardTitle>Authetication Token List</MDBCardTitle>
+                        <MDBCardText>
+                          Authetication Tokens are only for testing
+                        </MDBCardText>
+                        <MDBBtn>Token Info</MDBBtn>
+                      </MDBCardBody>
+                    </MDBCard>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
