@@ -64,7 +64,7 @@ contract ERC721Enumerable is ERC721, IERC721Enumerable {
         return _ownedTokens[_owner][_index];
     }
 
-    // _mint : user call mint in KryptoBirdz.sol and finally run it here
+    // _mint : user call mint in NFTAuthentication.sol and finally run it here
     // override ERC721.sol _mint function
     function _mint(address to, uint256 tokenId) internal override(ERC721) {
         super._mint(to, tokenId);

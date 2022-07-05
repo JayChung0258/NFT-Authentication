@@ -1,5 +1,5 @@
-const KryptoBird = artifacts.require("KryptoBird");
+const NFTAuthentication = artifacts.require("NFTAuthentication");
 
 module.exports = function(deployer) {
-  deployer.deploy(KryptoBird);
+  deployer.deploy(NFTAuthentication);
 };

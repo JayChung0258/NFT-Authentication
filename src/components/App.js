@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Web3 from "web3";
-import KryptoBird from "../abis/KryptoBird.json";
+import NFTAuthentication from "../abis/NFTAuthentication.json";
 import {
   MDBCard,
   MDBCardBody,
@@ -19,8 +19,9 @@ class App extends Component {
       contract: null,
       totalSupply: 0,
       targetWalletTotalSupply: 0,
-      kryptoBirdz: [],
+      NFTAuthenticationTokens: [],
       targetWalletAuthTokens: [], // this one should store the info of users' tokens
+      targetWalletNFTType: [],
     };
   }
 
@@ -54,9 +55,9 @@ class App extends Component {
 
     // create a constant js variable networkId which is set to blockchain network id
     const networkId = await window.web3.eth.net.getId();
-    const networkData = KryptoBird.networks[networkId];
+    const networkData = NFTAuthentication.networks[networkId];
     if (networkData) {
-      var abi = KryptoBird.abi;
+      var abi = NFTAuthentication.abi;
       var address = networkData.address;
       var contract = new window.web3.eth.Contract(abi, address);
       this.setState({ contract });
@@ -83,13 +84,14 @@ class App extends Component {
       //     kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
       //   });
       // }
-      console.log(this.state.kryptoBirdz);
+      console.log(this.state.NFTAuthenticationTokens);
 
       // keep track numbers of tokens in target wallet
       for (var i = 0; i < this.state.totalSupply; i++) {
-        const tmpForTestImage =
-          "https://i.ibb.co/Ms6v5wt/Net-Flix-Icon.png://i.imgur.com/XyqQZ9S.png";
-        const authTokens = await contract.methods.KryptoBirdz(i).call();
+        const tmpForTestImage = await contract.methods
+          .TypeOfNFTTokens(i)
+          .call();
+        const authTokens = await contract.methods.NFTAuthentications(i).call();
         const ownerAddress = await contract.methods.ownerOf(i).call();
 
         console.log("ownerAddress: " + ownerAddress);
@@ -103,6 +105,10 @@ class App extends Component {
               ...this.state.targetWalletAuthTokens,
               authTokens,
             ],
+            targetWalletNFTType: [
+              ...this.state.targetWalletNFTType,
+              tmpForTestImage,
+            ],
           });
         }
       }
@@ -114,13 +120,16 @@ class App extends Component {
 
   // With minting we are sending info and we need to specify the account
   // Use the user info as the sender msg
-  mint = (mintMsg) => {
+  mint = (mintMsg, typeMsg) => {
     this.state.contract.methods
-      .mint(mintMsg)
+      .mint(mintMsg, typeMsg)
       .send({ from: this.state.account })
       .once("receipt", (receipt) => {
         this.setState({
-          kryptoBirdz: [...this.state.kryptoBirdz, mintMsg],
+          NFTAuthenticationTokens: [
+            ...this.state.NFTAuthenticationTokens,
+            mintMsg,
+          ],
         });
       });
   };
@@ -157,7 +166,8 @@ class App extends Component {
                     event.preventDefault();
                     // const typeOfNFT = this.typeOfNFT.value;
                     const mintMsg = this.mintMsg.value;
-                    this.mint(mintMsg);
+                    const typeMsg = this.typeMsg.value;
+                    this.mint(mintMsg, typeMsg);
                   }}
                 >
                   {/* Get user' info */}
@@ -168,12 +178,12 @@ class App extends Component {
                     ref={(input) => (this.mintMsg = input)}
                   ></input>
                   {/* Choose type of NFT */}
-                  {/* <input
+                  <input
                     type="text"
                     placeholder="Image location"
                     className="form-control mb-1"
-                    ref={(input) => (this.typeOfNFT = input)}
-                  ></input> */}
+                    ref={(input) => (this.typeMsg = input)}
+                  ></input>
                   <input
                     style={{ margin: "6px" }}
                     type="submit"
@@ -186,7 +196,7 @@ class App extends Component {
           </div>
           <hr></hr>
           <div className="row textCenter">
-            {this.state.targetWalletAuthTokens.map((srcImage, key) => {
+            {this.state.targetWalletNFTType.map((srcImage, key) => {
               return (
                 <div>
                   <div>
@@ -205,6 +215,7 @@ class App extends Component {
                         <MDBCardText>
                           Authetication Tokens are only for testing
                         </MDBCardText>
+                        {/* Btn limk to info */}
                         <MDBBtn>Token Info</MDBBtn>
                       </MDBCardBody>
                     </MDBCard>

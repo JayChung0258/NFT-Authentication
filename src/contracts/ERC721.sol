@@ -62,7 +62,7 @@ contract ERC721 is ERC165, IERC721 {
         return owner != address(0);
     }
 
-    // _mint : user call mint from KryptoBirdz.sol and run it here
+    // _mint : user call mint from NFTAuthentication.sol and run it here
     // virtual _mint function, be overrided in ERC721Enumerable.sol
     function _mint(address to, uint256 tokenId) internal virtual {
         // address(0) -> 0x000000
