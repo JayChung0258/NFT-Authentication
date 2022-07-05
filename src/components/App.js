@@ -20,7 +20,7 @@ class App extends Component {
       totalSupply: 0,
       targetWalletTotalSupply: 0,
       kryptoBirdz: [],
-      targetWalletAuthTokens: [],
+      targetWalletAuthTokens: [], // this one should store the info of users' tokens
     };
   }
 
@@ -87,6 +87,8 @@ class App extends Component {
 
       // keep track numbers of tokens in target wallet
       for (var i = 0; i < this.state.totalSupply; i++) {
+        const tmpForTestImage =
+          "https://i.ibb.co/Ms6v5wt/Net-Flix-Icon.png://i.imgur.com/XyqQZ9S.png";
         const authTokens = await contract.methods.KryptoBirdz(i).call();
         const ownerAddress = await contract.methods.ownerOf(i).call();
 
@@ -110,7 +112,8 @@ class App extends Component {
     }
   }
 
-  // with minting we are sending info and we need to specify the account
+  // With minting we are sending info and we need to specify the account
+  // Use the user info as the sender msg
   mint = (mintMsg) => {
     this.state.contract.methods
       .mint(mintMsg)
@@ -152,16 +155,25 @@ class App extends Component {
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
+                    // const typeOfNFT = this.typeOfNFT.value;
                     const mintMsg = this.mintMsg.value;
                     this.mint(mintMsg);
                   }}
                 >
+                  {/* Get user' info */}
                   <input
                     type="text"
-                    placeholder="Add a file location"
+                    placeholder="User Name"
                     className="form-control mb-1"
                     ref={(input) => (this.mintMsg = input)}
                   ></input>
+                  {/* Choose type of NFT */}
+                  {/* <input
+                    type="text"
+                    placeholder="Image location"
+                    className="form-control mb-1"
+                    ref={(input) => (this.typeOfNFT = input)}
+                  ></input> */}
                   <input
                     style={{ margin: "6px" }}
                     type="submit"
