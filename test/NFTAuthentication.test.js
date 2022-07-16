@@ -1,18 +1,18 @@
 const { assert } = require("chai");
 
-const KryptoBird = artifacts.require("./KryptoBird");
+const NFTAuthentication = artifacts.require("./NFTAuthentication");
 
 require("chai")
   .use(require("chai-as-promised"))
   .should();
 
-contract("KryptoBird", (accounts) => {
+contract("NFTAuthentication", (accounts) => {
   // init the global variable
   let contract;
 
   // before key word make the tests to run this first
   before(async () => {
-    contract = await KryptoBird.deployed();
+    contract = await NFTAuthentication.deployed();
   });
 
   // testing container - describe
@@ -28,7 +28,7 @@ contract("KryptoBird", (accounts) => {
 
     it("correct name", async () => {
       const name = await contract.name();
-      assert.equal(name, "KryptoBird");
+      assert.equal(name, "NFTAuthentication");
     });
 
     it("correct symbol", async () => {
@@ -39,7 +39,7 @@ contract("KryptoBird", (accounts) => {
 
   describe("minting", async () => {
     it("creates a new token", async () => {
-      const result = await contract.mint("http....1");
+      const result = await contract.mint("http....1", "TEST.jpg");
       const totalSupply = await contract.totalSupply();
 
       // Sucess
@@ -53,24 +53,24 @@ contract("KryptoBird", (accounts) => {
       assert.equal(event._to, accounts[0], "to is msg sender");
 
       // Failure (try duplicated minting)
-      await contract.mint("http....1").should.be.rejected;
+      await contract.mint("http....1", "TEST.jpg").should.be.rejected;
     });
   });
 
   describe("minting", async () => {
-    it("lists KryptoBirdz", async () => {
+    it("lists Auth tokens", async () => {
       // Mint new tokens
-      await contract.mint("http....2");
-      await contract.mint("http....3");
-      await contract.mint("http....4");
+      await contract.mint("http....2", "TEST.jpg");
+      await contract.mint("http....3", "TEST.jpg");
+      await contract.mint("http....4", "TEST.jpg");
       const totalSupply = await contract.totalSupply();
 
       // Loop through list and grab Kbirdz from list
       let result = [];
-      let KryptoBird;
+      let auth;
       for (i = 0; i < totalSupply; i++) {
-        KryptoBird = await contract.KryptoBirdz(i); // KryptoBirdz type : string [] but use () to each value
-        result.push(KryptoBird);
+        auth = await contract.NFTAuthentications(i); // NFTAuthentications type : string [] but use () to each value
+        result.push(auth);
       }
       let expected = ["http....1", "http....2", "http....3", "http....4"];
       assert.equal(result.join(","), expected.join(","));
