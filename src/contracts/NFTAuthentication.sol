@@ -7,6 +7,7 @@ contract NFTAuthentication is ERC721Connector {
     // array to store our nfts
     string[] public NFTAuthentications;
     string[] public TypeOfNFTTokens;
+    uint256[] public MintTimeStamp;
 
     mapping(string => bool) _NFTAuthExists;
 
@@ -22,6 +23,7 @@ contract NFTAuthentication is ERC721Connector {
         _NFTAuthExists[_infoMsg] = true;
 
         TypeOfNFTTokens.push(_type);
+        MintTimeStamp.push(block.timestamp);
     }
 
     constructor() ERC721Connector("NFTAuthentication", "JAY") {}

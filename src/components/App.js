@@ -19,9 +19,8 @@ class App extends Component {
       contract: null,
       totalSupply: 0,
       targetWalletTotalSupply: 0,
-      NFTAuthenticationTokens: [],
-      targetWalletAuthTokens: [], // this one should store the info of users' tokens
-      targetWalletNFTType: [],
+      NFTAuthenticationTokens: [], // this include all info of all tokens
+      targetWalletAuthTokens: [], // this one should store the tokenId, onwer's info, and imageType
     };
   }
 
@@ -88,14 +87,27 @@ class App extends Component {
 
       // keep track numbers of tokens in target wallet
       for (var i = 0; i < this.state.totalSupply; i++) {
-        const tmpForTestImage = await contract.methods
-          .TypeOfNFTTokens(i)
-          .call();
-        const authTokens = await contract.methods.NFTAuthentications(i).call();
-        const ownerAddress = await contract.methods.ownerOf(i).call();
+        const typeImage = await contract.methods.TypeOfNFTTokens(i).call(); // image of types
+        const userInfo = await contract.methods.NFTAuthentications(i).call(); // token info (user's info)
+        const tokenId = await contract.methods.tokenByIndex(i).call(); // token id
+        const ownerAddress = await contract.methods.ownerOf(i).call(); // owner address
+        const timeStamp = await contract.methods.MintTimeStamp(i).call(); // time stamp
+        const mintDate = new Date(timeStamp * 1000);
 
+        // store all info in one object
+        const authToken = {
+          typeImage,
+          userInfo,
+          tokenId,
+          ownerAddress,
+          mintDate,
+        };
+
+        //handle state of front end
         console.log("ownerAddress: " + ownerAddress);
         console.log("accounts[0]: " + this.state.account);
+        console.log("timestamp: " + timeStamp);
+        console.log("mintDate: " + mintDate);
 
         // if token is in the target wallet then add it to the state
         if (ownerAddress.toUpperCase() == accounts[0].toUpperCase()) {
@@ -103,11 +115,7 @@ class App extends Component {
           this.setState({
             targetWalletAuthTokens: [
               ...this.state.targetWalletAuthTokens,
-              authTokens,
-            ],
-            targetWalletNFTType: [
-              ...this.state.targetWalletNFTType,
-              tmpForTestImage,
+              authToken,
             ],
           });
         }
@@ -196,7 +204,7 @@ class App extends Component {
           </div>
           <hr></hr>
           <div className="row textCenter">
-            {this.state.targetWalletNFTType.map((srcImage, key) => {
+            {this.state.targetWalletAuthTokens.map((authToken, key) => {
               return (
                 <div>
                   <div>
@@ -205,18 +213,24 @@ class App extends Component {
                       style={{ maxWidth: "22rem" }}
                     >
                       <MDBCardImage
-                        src={srcImage}
+                        src={authToken.typeImage}
                         position="top"
                         height="250rem"
                         style={{ marginRight: "4px" }}
                       />
                       <MDBCardBody>
-                        <MDBCardTitle>Authetication Token List</MDBCardTitle>
+                        <MDBCardTitle></MDBCardTitle>
                         <MDBCardText>
-                          Authetication Tokens are only for testing
+                          User Info : {authToken.userInfo}
+                        </MDBCardText>
+                        <MDBCardText>
+                          Unique token ID : {authToken.tokenId.toNumber()}
+                        </MDBCardText>
+                        <MDBCardText>
+                          Mint Date : {authToken.mintDate.toString()}
                         </MDBCardText>
                         {/* Btn limk to info */}
-                        <MDBBtn>Token Info</MDBBtn>
+                        {/* <MDBBtn>Token Info</MDBBtn> */}
                       </MDBCardBody>
                     </MDBCard>
                   </div>
