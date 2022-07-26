@@ -21,11 +21,16 @@ class DashBoard extends Component {
       targetWalletTotalSupply: 0,
       NFTAuthenticationTokens: [], // this include all info of all tokens
       targetWalletAuthTokens: [], // this one should store the tokenId, onwer's info, and imageType
-      mintMsg: "",
+      userName: "",
       typeMsg: "",
+      subscription: "",
+      bindAccount: "",
     };
 
     // methods binding
+    this.handleUserName = this.handleUserName.bind(this);
+    this.handleSubscription = this.handleSubscription.bind(this);
+    this.handleBindAccount = this.handleBindAccount.bind(this);
     this.handleSelectTypeNFT = this.handleSelectTypeNFT.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -81,14 +86,6 @@ class DashBoard extends Component {
         "target wallet total supply: " + this.state.targetWalletTotalSupply
       );
 
-      // keep track numbers of tokens
-      // for (var i = 0; i < this.state.totalSupply; i++) {
-      //   const KryptoBird = await contract.methods.KryptoBirdz(i).call(); // KryptoBirdz type : string [] but use () to each value
-      //   //handle state of front end
-      //   this.setState({
-      //     kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird],
-      //   });
-      // }
       console.log(this.state.NFTAuthenticationTokens);
 
       // keep track numbers of tokens in target wallet
@@ -150,14 +147,49 @@ class DashBoard extends Component {
 
   // Handle the click of the button
   handleSubmit(event) {
-    const mintMsg = this.state.mintMsg
+    // Customer info
+    const userName = this.state.userName;
+    const subscription = this.state.subscription
+      ? this.state.subscription
+      : "7";
+    const bindAccount = this.state.bindAccount
+      ? this.state.bindAccount
+      : this.state.account;
+    const mintMsg = userName + "," + subscription + "," + bindAccount;
+
+    // console.log("userName: " + userName);
+    // console.log("subscription: " + subscription);
+    // console.log("bindAccount: " + bindAccount);
+    // console.log("mintMsg: " + mintMsg);
+
+    // Nft info
     const typeMsg = this.state.typeMsg
-    this.mint(mintMsg, typeMsg);
+      ? this.state.typeMsg
+      : "https://i.ibb.co/zVLtzHt/facebook.png";
+
+    if (userName && typeMsg) {
+      this.mint(mintMsg, typeMsg);
+    } else {
+      alert("Please fill in all fields");
+    }
+
     event.preventDefault();
   }
 
   handleSelectTypeNFT(event) {
     this.setState({ typeMsg: event.target.value });
+  }
+
+  handleUserName(event) {
+    this.setState({ userName: event.target.value });
+  }
+
+  handleSubscription(event) {
+    this.setState({ subscription: event.target.value });
+  }
+
+  handleBindAccount(event) {
+    this.setState({ bindAccount: event.target.value });
   }
 
   render() {
@@ -177,34 +209,74 @@ class DashBoard extends Component {
           </ul>
         </nav>
 
-        <div className="container-fluid mt-1">
+        <div className="container-fluid">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div
                 className="content mr-auto ml-auto"
                 style={{ opacity: "0.8" }}
               >
-                <h1 style={{ color: "black" }}>
-                  NFT Authetication - Dash Board
-                </h1>
-                <form
-                  onSubmit={this.handleSubmit}
-                >
+                <h1 className="text-dark">NFT Authetication - Dash Board</h1>
+                <form onSubmit={this.handleSubmit} class="d-flex flex-column">
                   {/* Get user' info */}
                   <input
                     type="text"
                     placeholder="User Name"
-                    className="form-control mb-1"
-                    ref={(input) => (this.mintMsg = input)}
+                    className="form-control mb-3 text-center"
+                    value={this.state.value}
+                    onChange={this.handleUserName}
                   ></input>
+                  <div>
+                    <text className="text-monospace">Subscription Plan</text>
+                    <select
+                      value={this.state.value}
+                      defaultValue="AAABBB"
+                      onChange={this.handleSubscription}
+                      className="form-control mb-3 text-center"
+                    >
+                      <option value="7">
+                        Week Subscription - $30 per month
+                      </option>
+                      <option value="30">
+                        Month Subscription - $100 per month
+                      </option>
+                      <option value="365">
+                        Year Subscription - $1000 per month
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <text className="text-monospace">Bind Account</text>
+                    <select
+                      value={this.state.value}
+                      defaultValue="AAABBB"
+                      onChange={this.handleBindAccount}
+                      className="form-control mb-3 text-center"
+                    >
+                      <option value={this.state.account}>
+                        {this.state.account}
+                      </option>
+                    </select>
+                  </div>
                   {/* Choose type of NFT */}
-                  <select value={this.state.value} onChange={this.handleSelectTypeNFT}>
-                    <option value="https://i.ibb.co/zVLtzHt/facebook.png">FaceBook advertising</option>
-                    <option value="https://i.ibb.co/QjrnnxR/Net-Flix-Icon.png">Netflix subscription</option>
-                    <option value="https://i.ibb.co/LSNB5Nk/unnamed.jpg">Youtube subscription</option>
-                  </select>
-
-                  <BasicSelect />
+                  <div>
+                    <text className="text-monospace">NFT Token</text>
+                    <select
+                      value={this.state.value}
+                      onChange={this.handleSelectTypeNFT}
+                      className="form-control mb-3 text-center"
+                    >
+                      <option value="https://i.ibb.co/zVLtzHt/facebook.png">
+                        FaceBook advertising
+                      </option>
+                      <option value="https://i.ibb.co/QjrnnxR/Net-Flix-Icon.png">
+                        Netflix subscription
+                      </option>
+                      <option value="https://i.ibb.co/LSNB5Nk/unnamed.jpg">
+                        Youtube subscription
+                      </option>
+                    </select>
+                  </div>
                   {/* Submit */}
                   <input
                     style={{ margin: "6px" }}
