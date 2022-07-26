@@ -21,7 +21,13 @@ class DashBoard extends Component {
       targetWalletTotalSupply: 0,
       NFTAuthenticationTokens: [], // this include all info of all tokens
       targetWalletAuthTokens: [], // this one should store the tokenId, onwer's info, and imageType
+      mintMsg: "",
+      typeMsg: "",
     };
+
+    // methods binding
+    this.handleSelectTypeNFT = this.handleSelectTypeNFT.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   async componentDidMount() {
@@ -142,6 +148,18 @@ class DashBoard extends Component {
       });
   };
 
+  // Handle the click of the button
+  handleSubmit(event) {
+    const mintMsg = this.state.mintMsg
+    const typeMsg = this.state.typeMsg
+    this.mint(mintMsg, typeMsg);
+    event.preventDefault();
+  }
+
+  handleSelectTypeNFT(event) {
+    this.setState({ typeMsg: event.target.value });
+  }
+
   render() {
     return (
       <div className="container-filled">
@@ -170,13 +188,7 @@ class DashBoard extends Component {
                   NFT Authetication - Dash Board
                 </h1>
                 <form
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    // const typeOfNFT = this.typeOfNFT.value;
-                    const mintMsg = this.mintMsg.value;
-                    const typeMsg = this.typeMsg.value;
-                    this.mint(mintMsg, typeMsg);
-                  }}
+                  onSubmit={this.handleSubmit}
                 >
                   {/* Get user' info */}
                   <input
@@ -186,12 +198,14 @@ class DashBoard extends Component {
                     ref={(input) => (this.mintMsg = input)}
                   ></input>
                   {/* Choose type of NFT */}
-                  <input
-                    type="text"
-                    placeholder="Image location"
-                    className="form-control mb-1"
-                    ref={(input) => (this.typeMsg = input)}
-                  ></input>
+                  <select value={this.state.value} onChange={this.handleSelectTypeNFT}>
+                    <option value="https://i.ibb.co/zVLtzHt/facebook.png">FaceBook advertising</option>
+                    <option value="https://i.ibb.co/QjrnnxR/Net-Flix-Icon.png">Netflix subscription</option>
+                    <option value="https://i.ibb.co/LSNB5Nk/unnamed.jpg">Youtube subscription</option>
+                  </select>
+
+                  <BasicSelect />
+                  {/* Submit */}
                   <input
                     style={{ margin: "6px" }}
                     type="submit"
