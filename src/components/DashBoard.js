@@ -19,7 +19,6 @@ class DashBoard extends Component {
       contract: null,
       totalSupply: 0,
       targetWalletTotalSupply: 0,
-      NFTAuthenticationTokens: [], // this include all info of all tokens
       targetWalletAuthTokens: [], // this one should store the tokenId, onwer's info, and imageType
       userName: "",
       typeMsg: "",
@@ -86,8 +85,6 @@ class DashBoard extends Component {
         "target wallet total supply: " + this.state.targetWalletTotalSupply
       );
 
-      console.log(this.state.NFTAuthenticationTokens);
-
       // keep track numbers of tokens in target wallet
       for (var i = 0; i < this.state.totalSupply; i++) {
         const typeImage = await contract.methods.TypeOfNFTTokens(i).call(); // image of types
@@ -107,10 +104,10 @@ class DashBoard extends Component {
         };
 
         //handle state of front end
-        console.log("ownerAddress: " + ownerAddress);
-        console.log("accounts[0]: " + this.state.account);
-        console.log("timestamp: " + timeStamp);
-        console.log("mintDate: " + mintDate);
+        // console.log("ownerAddress: " + ownerAddress);
+        // console.log("accounts[0]: " + this.state.account);
+        // console.log("timestamp: " + timeStamp);
+        // console.log("mintDate: " + mintDate);
 
         // if token is in the target wallet then add it to the state
         if (ownerAddress.toUpperCase() == accounts[0].toUpperCase()) {
@@ -135,13 +132,17 @@ class DashBoard extends Component {
     this.state.contract.methods
       .mint(mintMsg, typeMsg)
       .send({ from: this.state.account })
-      .once("receipt", (receipt) => {
-        this.setState({
-          NFTAuthenticationTokens: [
-            ...this.state.NFTAuthenticationTokens,
-            mintMsg,
-          ],
-        });
+      .on("transactionHash", function(hash) {
+        console.log("transactionHash", hash);
+      })
+      .on("confirmation", function(confirmationNumber, receipt) {
+        console.log("confirmationNumber", confirmationNumber);
+        console.log("receipt", receipt);
+      })
+      .on("error", function(error, receipt) {
+        // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+        console.log("error", error);
+        console.log("receipt", receipt);
       });
   };
 
