@@ -35,8 +35,24 @@ class DashBoard extends Component {
   }
 
   async componentDidMount() {
-    await this.loadWeb3();
-    await this.loadBlockchainData();
+    const web3Exist = await this.checkWeb3Exists();
+    if (web3Exist) {
+      await this.loadWeb3();
+      await this.loadBlockchainData();
+    }
+  }
+
+  // check if web3 is installed
+  async checkWeb3Exists() {
+    if (typeof window.ethereum !== "undefined") {
+      console.log("MetaMask is installed!");
+      return true;
+    } else {
+      alert(
+        "Hello! Consider adding an ethereum wallet such as MetaMask to fully use this website."
+      );
+      return false;
+    }
   }
 
   // set the ethereum provider
