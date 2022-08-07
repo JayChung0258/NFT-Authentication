@@ -298,7 +298,7 @@ class DashBoard extends Component {
                   <input
                     style={{ margin: "6px" }}
                     type="submit"
-                    className="btn btn-primary btn-black"
+                    class="ui button"
                     value="MINT"
                   ></input>
                 </form>
