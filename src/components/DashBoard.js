@@ -32,6 +32,7 @@ class DashBoard extends Component {
     this.handleBindAccount = this.handleBindAccount.bind(this);
     this.handleSelectTypeNFT = this.handleSelectTypeNFT.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleVerify = this.handleVerify.bind(this);
   }
 
   async componentDidMount() {
@@ -110,13 +111,26 @@ class DashBoard extends Component {
         const timeStamp = await contract.methods.MintTimeStamp(i).call(); // time stamp
         const mintDate = new Date(timeStamp * 1000);
 
+
+        const infoList = userInfo.split(",");
+        const userName = infoList[0];
+        const subscription = infoList[1];
+        const bindAccount = infoList[2];
+        const expiredDate = new Date(mintDate);
+        expiredDate.setDate(expiredDate.getDate() + parseInt(subscription));
+
+
+
         // store all info in one object
         const authToken = {
           typeImage,
-          userInfo,
+          userName,
+          subscription,
           tokenId,
+          bindAccount,
           ownerAddress,
           mintDate,
+          expiredDate,
         };
 
         //handle state of front end
@@ -162,7 +176,7 @@ class DashBoard extends Component {
       });
   };
 
-  // Handle the click of the button
+  // Handle the click of the mint button
   handleSubmit(event) {
     // Customer info
     const userName = this.state.userName;
@@ -207,6 +221,32 @@ class DashBoard extends Component {
 
   handleBindAccount(event) {
     this.setState({ bindAccount: event.target.value });
+  }
+
+  handleVerify(event, tokenData) {
+    console.log("verify btn triggered");
+    console.log(tokenData);
+
+    // condition check if the token is expired
+    if(tokenData.bindAccount != this.state.account){
+      alert("This token is not bind to your account");
+    }
+
+    if(tokenData.expiredDate < new Date()){
+      alert("This token is expired");
+    }
+
+
+    // send some info to the server
+    fetch( 'https://api.github.com/users/nnwa1689/repos',{method:"GET"})
+    .then(res => res.json())
+    .then(data => {
+        console.log("get data from server: " + data[0]["name"]);
+    })
+    .catch(e => {
+        console.log(e);
+    })
+
   }
 
   render() {
@@ -324,7 +364,13 @@ class DashBoard extends Component {
                       <MDBCardBody>
                         <MDBCardTitle></MDBCardTitle>
                         <MDBCardText>
-                          User Info : {authToken.userInfo}
+                          User Name : {authToken.userName}
+                        </MDBCardText>
+                        <MDBCardText>
+                          Subscription : {authToken.subscription}
+                        </MDBCardText>
+                        <MDBCardText>
+                          Bind Account : {authToken.bindAccount}
                         </MDBCardText>
                         <MDBCardText>
                           Unique token ID : {authToken.tokenId.toNumber()}
@@ -332,8 +378,12 @@ class DashBoard extends Component {
                         <MDBCardText>
                           Mint Date : {authToken.mintDate.toString()}
                         </MDBCardText>
+                        <MDBCardText>
+                          Expired Date : {authToken.expiredDate.toString()}
+                        </MDBCardText>
                         {/* Btn limk to info */}
                         {/* <MDBBtn>Token Info</MDBBtn> */}
+                        <button type="button" class="btn btn-primary" onClick={((e)=>this.handleVerify(e, authToken))}>Verify!</button>
                       </MDBCardBody>
                     </MDBCard>
                   </div>

@@ -9,13 +9,13 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <Header />
+        {/* <Header /> */}
         <Routes>
           <Route path="/" exact>
             首頁
           </Route>
-          <Route path="/login" exact element={<Login />}></Route>
-          {/* <Route path="/dashboard" exact element={<DashBoard />}></Route> */}
+          {/* <Route path="/login" exact element={<Login />}></Route> */}
+          <Route path="/dashboard" exact element={<DashBoard />}></Route>
         </Routes>
       </BrowserRouter>
     );
