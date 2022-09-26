@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 import Header from "./Header";
+import Contract from "./Contract";
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
           </Route>
           {/* <Route path="/login" exact element={<Login />}></Route> */}
           <Route path="/dashboard" exact element={<DashBoard />}></Route>
+          <Route path="/contract" element={<Contract />}></Route>
         </Routes>
       </BrowserRouter>
     );

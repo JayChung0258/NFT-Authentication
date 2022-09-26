@@ -111,15 +111,12 @@ class DashBoard extends Component {
         const timeStamp = await contract.methods.MintTimeStamp(i).call(); // time stamp
         const mintDate = new Date(timeStamp * 1000);
 
-
         const infoList = userInfo.split(",");
         const userName = infoList[0];
         const subscription = infoList[1];
         const bindAccount = infoList[2];
         const expiredDate = new Date(mintDate);
         expiredDate.setDate(expiredDate.getDate() + parseInt(subscription));
-
-
 
         // store all info in one object
         const authToken = {
@@ -228,25 +225,23 @@ class DashBoard extends Component {
     console.log(tokenData);
 
     // condition check if the token is expired
-    if(tokenData.bindAccount != this.state.account){
+    if (tokenData.bindAccount != this.state.account) {
       alert("This token is not bind to your account");
     }
 
-    if(tokenData.expiredDate < new Date()){
+    if (tokenData.expiredDate < new Date()) {
       alert("This token is expired");
     }
 
-
     // send some info to the server
-    fetch( 'https://api.github.com/users/nnwa1689/repos',{method:"GET"})
-    .then(res => res.json())
-    .then(data => {
+    fetch("https://api.github.com/users/nnwa1689/repos", { method: "GET" })
+      .then((res) => res.json())
+      .then((data) => {
         console.log("get data from server: " + data[0]["name"]);
-    })
-    .catch(e => {
+      })
+      .catch((e) => {
         console.log(e);
-    })
-
+      });
   }
 
   render() {
@@ -332,6 +327,7 @@ class DashBoard extends Component {
                       <option value="https://i.ibb.co/LSNB5Nk/unnamed.jpg">
                         Youtube subscription
                       </option>
+                      {/*  */}
                     </select>
                   </div>
                   {/* Submit */}
@@ -383,7 +379,13 @@ class DashBoard extends Component {
                         </MDBCardText>
                         {/* Btn limk to info */}
                         {/* <MDBBtn>Token Info</MDBBtn> */}
-                        <button type="button" class="btn btn-primary" onClick={((e)=>this.handleVerify(e, authToken))}>Verify!</button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          onClick={(e) => this.handleVerify(e, authToken)}
+                        >
+                          Verify!
+                        </button>
                       </MDBCardBody>
                     </MDBCard>
                   </div>

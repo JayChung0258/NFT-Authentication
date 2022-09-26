@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -11,9 +12,13 @@ const firebaseConfig = {
   storageBucket: "nft-authentication-742f6.appspot.com",
   messagingSenderId: "287335622167",
   appId: "1:287335622167:web:ce31fbddf39950d844de52",
+  databaseURL:
+    "https://nft-authentication-742f6-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
 
 // Initialize Firebase
-const useFireBase = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+// Initialize Realtime Database and get a reference to the service
+const database = getDatabase(app);
 
-export default useFireBase;
+export default database;
