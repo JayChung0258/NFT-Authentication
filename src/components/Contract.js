@@ -42,10 +42,10 @@ class Contract extends Component {
       // input data
       contractName: "",
       contractNFTs: "",
+      contractPic: "",
       contractEmail: false,
       contractPhone: false,
       contractBirthday: false,
-      contractAddress: "",
 
       // series data
       NFTsData: {},
@@ -112,6 +112,7 @@ class Contract extends Component {
       contractName: this.state.contractName,
       contractOwnerAddress: this.state.account,
       contractNFTs: this.state.contractNFTs,
+      contractPic: this.state.contractPic,
       contractEmail: this.state.contractEmail,
       contractPhone: this.state.contractPhone,
       contractBirthday: this.state.contractBirthday,
@@ -201,6 +202,12 @@ class Contract extends Component {
               }}
               onChange={(e) => this.setState({ contractNFTs: e.target.value })}
             />
+            <TextField
+              required
+              id="outlined-pic"
+              label="Picture Link"
+              onChange={(e) => this.setState({ contractPic: e.target.value })}
+            />
           </div>
           <div>
             <FormControl component="fieldset" variant="standard">
@@ -256,19 +263,25 @@ class Contract extends Component {
         >
           Create
         </button>
-        <button
+        {/* <button
           type="button"
           class="btn btn-primary"
           onClick={() => this.getDB()}
         >
           Get
-        </button>
-        <div>
+        </button> */}
+        <div className="row textCenter">
           {this.getSortNFTsData().map((data, key) => {
             return (
               <div>
                 <div>
                   <MDBCard className="token img" style={{ maxWidth: "22rem" }}>
+                    <MDBCardImage
+                      src={data.contractPic}
+                      position="top"
+                      height="250rem"
+                      style={{ marginRight: "4px" }}
+                    />
                     <MDBCardBody>
                       <MDBCardTitle></MDBCardTitle>
                       <MDBCardText>

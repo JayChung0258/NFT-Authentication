@@ -7,9 +7,11 @@ import {
   MDBCardTitle,
   MDBCardText,
   MDBCardImage,
-  MDBBtn,
 } from "mdb-react-ui-kit";
 import "./DashBoard.css";
+
+import { child, get, ref } from "firebase/database";
+import database from "./utils/firebase";
 
 class DashBoard extends Component {
   constructor(props) {
@@ -24,6 +26,10 @@ class DashBoard extends Component {
       typeMsg: "",
       subscription: "",
       bindAccount: "",
+
+      // mint choices
+      NFTsData: {},
+      NFTsDataList: [],
     };
 
     // methods binding
@@ -36,11 +42,38 @@ class DashBoard extends Component {
   }
 
   async componentDidMount() {
+    // load web3 env
     const web3Exist = await this.checkWeb3Exists();
     if (web3Exist) {
       await this.loadWeb3();
       await this.loadBlockchainData();
     }
+
+    // load database NFT types
+    const dbRef = ref(database);
+    get(child(dbRef, "Contracts"))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          console.log(snapshot.val());
+          this.setState({ NFTsData: snapshot.val() });
+          this.setState({ NFTsDataList: this.getNFTsDataList() });
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  getNFTsDataList() {
+    const NFTsData = this.state.NFTsData;
+    const NFTsDataArray = [];
+    for (let key in NFTsData) {
+      NFTsDataArray.push(NFTsData[key]);
+    }
+    console.log(NFTsDataArray);
+    return NFTsDataArray;
   }
 
   // check if web3 is installed
@@ -104,52 +137,48 @@ class DashBoard extends Component {
 
       // keep track numbers of tokens in target wallet
       for (var i = 0; i < this.state.totalSupply; i++) {
-        const typeImage = await contract.methods.TypeOfNFTTokens(i).call(); // image of types
-        const userInfo = await contract.methods.NFTAuthentications(i).call(); // token info (user's info)
-        const tokenId = await contract.methods.tokenByIndex(i).call(); // token id
         const ownerAddress = await contract.methods.ownerOf(i).call(); // owner address
-        const timeStamp = await contract.methods.MintTimeStamp(i).call(); // time stamp
-        const mintDate = new Date(timeStamp * 1000);
-
-        const infoList = userInfo.split(",");
-        const userName = infoList[0];
-        const subscription = infoList[1];
-        const bindAccount = infoList[2];
-        const expiredDate = new Date(mintDate);
-        expiredDate.setDate(expiredDate.getDate() + parseInt(subscription));
-
-        // store all info in one object
-        const authToken = {
-          typeImage,
-          userName,
-          subscription,
-          tokenId,
-          bindAccount,
-          ownerAddress,
-          mintDate,
-          expiredDate,
-        };
-
-        //handle state of front end
-        // console.log("ownerAddress: " + ownerAddress);
-        // console.log("accounts[0]: " + this.state.account);
-        // console.log("timestamp: " + timeStamp);
-        // console.log("mintDate: " + mintDate);
 
         // if token is in the target wallet then add it to the state
         if (ownerAddress.toUpperCase() == accounts[0].toUpperCase()) {
           console.log("SAME!");
+
+          const typeImage = await contract.methods.TypeOfNFTTokens(i).call(); // image of types
+          const userInfo = await contract.methods.NFTAuthentications(i).call(); // token info (user's info)
+          const tokenId = await contract.methods.tokenByIndex(i).call(); // token id
+          const timeStamp = await contract.methods.MintTimeStamp(i).call(); // time stamp
+          const mintDate = new Date(timeStamp * 1000);
+
+          const infoList = userInfo.split(",");
+          const userName = infoList[0];
+          const subscription = infoList[1];
+          const bindAccount = infoList[2];
+          const expiredDate = new Date(mintDate);
+          expiredDate.setDate(expiredDate.getDate() + parseInt(subscription));
+
+          // store all info in one object
+          const authToken = {
+            typeImage,
+            userName,
+            subscription,
+            tokenId,
+            bindAccount,
+            ownerAddress,
+            mintDate,
+            expiredDate,
+          };
+
           this.setState({
             targetWalletAuthTokens: [
               ...this.state.targetWalletAuthTokens,
               authToken,
             ],
           });
+        } else {
+          window.alert("Smart Contract not deployed");
         }
       }
       console.log(this.state.targetWalletAuthTokens);
-    } else {
-      window.alert("Smart Contract not deployed");
     }
   }
 
@@ -184,11 +213,6 @@ class DashBoard extends Component {
       ? this.state.bindAccount
       : this.state.account;
     const mintMsg = userName + "," + subscription + "," + bindAccount;
-
-    // console.log("userName: " + userName);
-    // console.log("subscription: " + subscription);
-    // console.log("bindAccount: " + bindAccount);
-    // console.log("mintMsg: " + mintMsg);
 
     // Nft info
     const typeMsg = this.state.typeMsg
@@ -318,16 +342,11 @@ class DashBoard extends Component {
                       onChange={this.handleSelectTypeNFT}
                       className="form-control mb-3 text-center"
                     >
-                      <option value="https://i.ibb.co/zVLtzHt/facebook.png">
-                        FaceBook advertising
-                      </option>
-                      <option value="https://i.ibb.co/QjrnnxR/Net-Flix-Icon.png">
-                        Netflix subscription
-                      </option>
-                      <option value="https://i.ibb.co/LSNB5Nk/unnamed.jpg">
-                        Youtube subscription
-                      </option>
-                      {/*  */}
+                      {this.state.NFTsDataList.map((data) => (
+                        <option value={data.contractPic}>
+                          {data.contractName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   {/* Submit */}
