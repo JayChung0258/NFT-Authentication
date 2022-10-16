@@ -350,6 +350,20 @@ class DashBoard extends Component {
                     </select>
                   </div>
                   {/* Submit */}
+                  {/* <input
+                    type="text"
+                    placeholder="Email"
+                    className="form-control mb-3 text-center"
+                    value={this.state.value}
+                    onChange={this.handleUserName}
+                  ></input>
+                  <input
+                    type="text"
+                    placeholder="Birthday"
+                    className="form-control mb-3 text-center"
+                    value={this.state.value}
+                    onChange={this.handleUserName}
+                  ></input> */}
                   <input
                     style={{ margin: "6px" }}
                     type="submit"

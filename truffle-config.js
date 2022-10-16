@@ -13,11 +13,11 @@ module.exports = {
       port: 7545,
       network_id: "*",
     },
-    rinkeby: {
+    goerli: {
       provider: function() {
         return new HDWalletProvider(
           mnemonic,
-          "https://rinkeby.infura.io/v3/a50e70eddf344993b4371d7ba3fe96d0"
+          "https://goerli.infura.io/v3/a50e70eddf344993b4371d7ba3fe96d0"
         );
       },
       network_id: "*",
